@@ -5,11 +5,13 @@ const CELL_SIZE := 128.0
 const CAMERA_SPEED := 700.0
 
 @onready var camera: Camera2D = $Camera2D
+@onready var time_system = $TimeSystem
 
 
 func _ready() -> void:
 	camera.offset = Vector2.ZERO
 	camera.position = MAP_SIZE / 2.0
+	time_system.day_passed.connect(_on_day_passed)
 	queue_redraw()
 
 
@@ -34,3 +36,6 @@ func _draw() -> void:
 		draw_line(Vector2(0, y), Vector2(MAP_SIZE.x, y), Color("#45643c"), 2.0)
 
 	draw_circle(MAP_SIZE / 2.0, 24.0, Color("#d4b16a"))
+
+func _on_day_passed(day_number: int) -> void:
+	print("È iniziato il giorno ", day_number)
