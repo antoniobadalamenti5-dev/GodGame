@@ -3,22 +3,25 @@ extends Node2D
 
 signal housing_shortage(homeless_citizens: int)
 
+@export var construction_site_scene: PackedScene
+@export var construction_origin := Vector2(180, 130)
+@export var god_state: GodState
+@export var mentality_change_per_day := 5.0
+
 @onready var citizens: Node2D = $Citizens
 @onready var houses: Node2D = $Houses
 @onready var construction_sites: Node2D = $ConstructionSites
+var expansion_mindset := 0.0
+@onready var social_structures: Node2D = $SocialStructures
+@onready var temple: Temple = $Temple
 
 
 func _ready() -> void:
-	for child in construction_sites.get_children():
-		if child is ConstructionSite:
-			child.construction_completed.connect(
-				_on_construction_completed.bind(child)
-			)
-
 	evaluate_housing()
 
 
 func advance_day(_day_number: int) -> void:
+	update_mentality()
 	evaluate_housing()
 
 
@@ -39,7 +42,6 @@ func evaluate_housing() -> void:
 	if homeless_citizens > 0:
 		housing_shortage.emit(homeless_citizens)
 		print("Carenza abitativa: ", homeless_citizens, " cittadino/i senza casa.")
-	
 		start_housing_project()
 
 
@@ -52,13 +54,38 @@ func get_total_housing_capacity() -> int:
 
 	return total_capacity
 
-func start_housing_project() -> void:
+
+func get_active_construction_site() -> ConstructionSite:
 	for child in construction_sites.get_children():
 		if child is ConstructionSite:
-			if not child.is_active and not child.is_completed:
-				child.activate()
-				print("La città avvia un cantiere per una nuova casa.")
-				return
+			if child.is_active and not child.is_completed:
+				return child
+
+	return null
+
+
+func start_housing_project() -> void:
+	if get_active_construction_site() != null:
+		return
+
+	if construction_site_scene == null:
+		push_error("Assegna Construction Site Scene al nodo City.")
+		return
+
+	var site: ConstructionSite = construction_site_scene.instantiate()
+	site.position = get_next_house_site_position()
+
+	construction_sites.add_child(site)
+	site.construction_completed.connect(_on_construction_completed.bind(site))
+	site.activate()
+
+	print("La città avvia un cantiere per una nuova casa.")
+
+
+func get_next_house_site_position() -> Vector2:
+	var house_count: int = houses.get_child_count()
+	return construction_origin + Vector2(120.0 * house_count, 0.0)
+
 
 func _on_construction_completed(site: ConstructionSite) -> void:
 	var new_house: House = House.new()
@@ -69,3 +96,23 @@ func _on_construction_completed(site: ConstructionSite) -> void:
 
 	print("Una nuova casa è stata completata.")
 	evaluate_housing()
+
+func get_meeting_place() -> MeetingPlace:
+	for child in social_structures.get_children():
+		if child is MeetingPlace:
+			return child
+
+	return null
+
+
+func update_mentality() -> void:
+	if temple == null or god_state == null:
+		return
+
+	expansion_mindset = move_toward(
+		expansion_mindset,
+		god_state.expansion_directive,
+		mentality_change_per_day
+	)
+
+	print("Mentalità espansionista: ", expansion_mindset)

@@ -1,0 +1,6 @@
+[gd_scene format=3 uid="uid://ohxsvfihv5vl"]
+
+[ext_resource type="Script" uid="uid://d3ko3ptij52fw" path="res://scripts/construction_site.gd" id="1_l1rfi"]
+
+[node name="HouseConstructionSite" type="Node2D" unique_id=1393077746]
+script = ExtResource("1_l1rfi")
