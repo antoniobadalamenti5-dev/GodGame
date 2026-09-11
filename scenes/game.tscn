@@ -5,7 +5,11 @@
 [ext_resource type="Script" uid="uid://bgadpgulpyhwk" path="res://scripts/world.gd" id="3_lnu2h"]
 [ext_resource type="Script" uid="uid://dmx1lwi7jjpre" path="res://scripts/resources/water_source.gd" id="4_lbhrr"]
 [ext_resource type="Script" uid="uid://co1eay41yjw3b" path="res://scripts/resources/berry_bush.gd" id="5_iywne"]
+[ext_resource type="Script" uid="uid://b546aqvta1i51" path="res://scripts/resources/tree.gd" id="6_0tnpc"]
+[ext_resource type="Script" uid="uid://de8csh7w5yo0p" path="res://scripts/city.gd" id="6_gee14"]
 [ext_resource type="Script" uid="uid://ckuqflq8x5qgi" path="res://scripts/citizen.gd" id="6_p57ef"]
+[ext_resource type="Script" uid="uid://b1ce46hhujlg8" path="res://scripts/house.gd" id="7_u5sy4"]
+[ext_resource type="Script" uid="uid://d3ko3ptij52fw" path="res://scripts/construction_site.gd" id="10_vtaks"]
 
 [node name="Game" type="Node2D" unique_id=21683081]
 script = ExtResource("1_uwrxv")
@@ -28,14 +32,54 @@ script = ExtResource("4_lbhrr")
 position = Vector2(2700, 1550)
 script = ExtResource("5_iywne")
 
+[node name="Tree" type="Node2D" parent="World/Resources" unique_id=63316338]
+position = Vector2(2900, 850)
+script = ExtResource("6_0tnpc")
+
 [node name="City" type="Node2D" parent="World" unique_id=992664893]
 position = Vector2(2048, 1280)
+script = ExtResource("6_gee14")
 
 [node name="Citizens" type="Node2D" parent="World/City" unique_id=1003287406]
 
-[node name="Citizen" type="Node2D" parent="World/City/Citizens" unique_id=1316191028 node_paths=PackedStringArray("water_source", "berry_bush", "time_system")]
+[node name="Citizen" type="Node2D" parent="World/City/Citizens" unique_id=1316191028 node_paths=PackedStringArray("water_source", "berry_bush", "tree", "construction_site", "time_system")]
 position = Vector2(80, 50)
 script = ExtResource("6_p57ef")
 water_source = NodePath("../../../Resources/WaterSource")
 berry_bush = NodePath("../../../Resources/BerryBush")
+tree = NodePath("../../../Resources/Tree")
+construction_site = NodePath("../../ConstructionSites/HouseConstructionSite")
 time_system = NodePath("../../../../TimeSystem")
+
+[node name="Citizen2" type="Node2D" parent="World/City/Citizens" unique_id=44642831 node_paths=PackedStringArray("water_source", "berry_bush", "tree", "construction_site", "time_system")]
+position = Vector2(-60, 90)
+script = ExtResource("6_p57ef")
+water_source = NodePath("../../../Resources/WaterSource")
+berry_bush = NodePath("../../../Resources/BerryBush")
+tree = NodePath("../../../Resources/Tree")
+construction_site = NodePath("../../ConstructionSites/HouseConstructionSite")
+time_system = NodePath("../../../../TimeSystem")
+
+[node name="Citizen3" type="Node2D" parent="World/City/Citizens" unique_id=629208494 node_paths=PackedStringArray("water_source", "berry_bush", "tree", "construction_site", "time_system")]
+position = Vector2(40, -80)
+script = ExtResource("6_p57ef")
+water_source = NodePath("../../../Resources/WaterSource")
+berry_bush = NodePath("../../../Resources/BerryBush")
+tree = NodePath("../../../Resources/Tree")
+construction_site = NodePath("../../ConstructionSites/HouseConstructionSite")
+time_system = NodePath("../../../../TimeSystem")
+thirst_loss_per_day = 1.0
+hunger_loss_per_day = 2.0
+shelter_loss_per_day = 4.0
+
+[node name="Houses" type="Node2D" parent="World/City" unique_id=1814713734]
+
+[node name="House" type="Node2D" parent="World/City/Houses" unique_id=1925180615]
+position = Vector2(-160, 100)
+script = ExtResource("7_u5sy4")
+
+[node name="ConstructionSites" type="Node2D" parent="World/City" unique_id=1475186929]
+
+[node name="HouseConstructionSite" type="Node2D" parent="World/City/ConstructionSites" unique_id=2136133286]
+position = Vector2(180, 130)
+script = ExtResource("10_vtaks")

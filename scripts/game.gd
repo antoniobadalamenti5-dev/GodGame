@@ -5,12 +5,14 @@ const CAMERA_SPEED := 700.0
 @onready var camera: Camera2D = $Camera2D
 @onready var time_system = $TimeSystem
 @onready var world = $World
+@onready var city: City = $World/City
 
 func _ready() -> void:
 	camera.offset = Vector2.ZERO
 	camera.position = world.map_size / 2.0
 	time_system.day_passed.connect(_on_day_passed)
 	time_system.day_passed.connect(world.advance_day)
+	time_system.day_passed.connect(city.advance_day)
 	queue_redraw()
 
 

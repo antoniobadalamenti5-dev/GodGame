@@ -1,9 +1,9 @@
 class_name BerryBush
 extends Node2D
 
-@export var max_amount := 60.0
-@export var current_amount := 25.0
-@export var regeneration_per_day := 5.0
+@export var max_amount := 180.0
+@export var current_amount := 180.0
+@export var regeneration_per_day := 20.0
 
 
 func _ready() -> void:
