@@ -4,6 +4,7 @@
 [ext_resource type="Script" uid="uid://bekp2evxffs1s" path="res://scripts/systems/time_system.gd" id="2_yqjtg"]
 [ext_resource type="Script" uid="uid://bgadpgulpyhwk" path="res://scripts/world.gd" id="3_lnu2h"]
 [ext_resource type="Script" uid="uid://dmx1lwi7jjpre" path="res://scripts/resources/water_source.gd" id="4_lbhrr"]
+[ext_resource type="Script" uid="uid://co1eay41yjw3b" path="res://scripts/resources/berry_bush.gd" id="5_iywne"]
 
 [node name="Game" type="Node2D" unique_id=21683081]
 script = ExtResource("1_uwrxv")
@@ -21,3 +22,7 @@ script = ExtResource("3_lnu2h")
 [node name="WaterSource" type="Node2D" parent="World/Resources" unique_id=1938078989]
 position = Vector2(1400, 800)
 script = ExtResource("4_lbhrr")
+
+[node name="BerryBush" type="Node2D" parent="World/Resources" unique_id=1336457543]
+position = Vector2(2700, 1550)
+script = ExtResource("5_iywne")
