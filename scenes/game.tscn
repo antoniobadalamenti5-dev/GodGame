@@ -5,6 +5,7 @@
 [ext_resource type="Script" uid="uid://bgadpgulpyhwk" path="res://scripts/world.gd" id="3_lnu2h"]
 [ext_resource type="Script" uid="uid://dmx1lwi7jjpre" path="res://scripts/resources/water_source.gd" id="4_lbhrr"]
 [ext_resource type="Script" uid="uid://co1eay41yjw3b" path="res://scripts/resources/berry_bush.gd" id="5_iywne"]
+[ext_resource type="Script" uid="uid://ckuqflq8x5qgi" path="res://scripts/citizen.gd" id="6_p57ef"]
 
 [node name="Game" type="Node2D" unique_id=21683081]
 script = ExtResource("1_uwrxv")
@@ -26,3 +27,15 @@ script = ExtResource("4_lbhrr")
 [node name="BerryBush" type="Node2D" parent="World/Resources" unique_id=1336457543]
 position = Vector2(2700, 1550)
 script = ExtResource("5_iywne")
+
+[node name="City" type="Node2D" parent="World" unique_id=992664893]
+position = Vector2(2048, 1280)
+
+[node name="Citizens" type="Node2D" parent="World/City" unique_id=1003287406]
+
+[node name="Citizen" type="Node2D" parent="World/City/Citizens" unique_id=1316191028 node_paths=PackedStringArray("water_source", "berry_bush", "time_system")]
+position = Vector2(80, 50)
+script = ExtResource("6_p57ef")
+water_source = NodePath("../../../Resources/WaterSource")
+berry_bush = NodePath("../../../Resources/BerryBush")
+time_system = NodePath("../../../../TimeSystem")

@@ -1,3 +1,4 @@
+class_name TimeSystem
 extends Node
 
 signal day_passed(day_number: int)

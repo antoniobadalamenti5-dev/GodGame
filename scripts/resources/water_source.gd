@@ -1,3 +1,4 @@
+class_name WaterSource
 extends Node2D
 
 @export var max_amount := 100.0

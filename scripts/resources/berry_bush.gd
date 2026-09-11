@@ -1,3 +1,4 @@
+class_name BerryBush
 extends Node2D
 
 @export var max_amount := 60.0
