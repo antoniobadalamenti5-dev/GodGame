@@ -13,6 +13,7 @@
 [ext_resource type="Script" uid="uid://c0d1r20tgay3q" path="res://scripts/meeting_place.gd" id="11_kvpfn"]
 [ext_resource type="Script" uid="uid://bn3di0ngqt5t6" path="res://scripts/god_state.gd" id="12_dinhu"]
 [ext_resource type="Script" uid="uid://b7s052utkt7gk" path="res://scripts/temple.gd" id="12_kvuet"]
+[ext_resource type="PackedScene" path="res://scenes/citizen.tscn" id="13_citizen_scene"]
 
 [node name="Game" type="Node2D" unique_id=21683081]
 script = ExtResource("1_uwrxv")
@@ -43,58 +44,44 @@ script = ExtResource("6_0tnpc")
 position = Vector2(2048, 1280)
 script = ExtResource("6_gee14")
 construction_site_scene = ExtResource("10_vtaks")
+citizen_scene = ExtResource("13_citizen_scene")
 god_state = NodePath("../../GodState")
 
 [node name="Citizens" type="Node2D" parent="World/City" unique_id=1003287406]
 
-[node name="Citizen" type="Node2D" parent="World/City/Citizens" unique_id=1316191028 node_paths=PackedStringArray("water_source", "berry_bush", "tree", "city", "time_system")]
+[node name="Citizen" type="Node2D" parent="World/City/Citizens" unique_id=1316191028 node_paths=PackedStringArray("city", "time_system")]
 position = Vector2(80, 50)
 script = ExtResource("6_p57ef")
-water_source = NodePath("../../../Resources/WaterSource")
-berry_bush = NodePath("../../../Resources/BerryBush")
-tree = NodePath("../../../Resources/Tree")
 city = NodePath("../..")
 time_system = NodePath("../../../../TimeSystem")
 
-[node name="Citizen2" type="Node2D" parent="World/City/Citizens" unique_id=44642831 node_paths=PackedStringArray("water_source", "berry_bush", "tree", "city", "time_system")]
+[node name="Citizen2" type="Node2D" parent="World/City/Citizens" unique_id=44642831 node_paths=PackedStringArray("city", "time_system")]
 position = Vector2(-60, 90)
 script = ExtResource("6_p57ef")
-water_source = NodePath("../../../Resources/WaterSource")
-berry_bush = NodePath("../../../Resources/BerryBush")
-tree = NodePath("../../../Resources/Tree")
 city = NodePath("../..")
 time_system = NodePath("../../../../TimeSystem")
 
-[node name="Citizen3" type="Node2D" parent="World/City/Citizens" unique_id=629208494 node_paths=PackedStringArray("water_source", "berry_bush", "tree", "city", "time_system")]
+[node name="Citizen3" type="Node2D" parent="World/City/Citizens" unique_id=629208494 node_paths=PackedStringArray("city", "time_system")]
 position = Vector2(40, -80)
 script = ExtResource("6_p57ef")
-water_source = NodePath("../../../Resources/WaterSource")
-berry_bush = NodePath("../../../Resources/BerryBush")
-tree = NodePath("../../../Resources/Tree")
 city = NodePath("../..")
 time_system = NodePath("../../../../TimeSystem")
 thirst_loss_per_day = 1.0
 hunger_loss_per_day = 2.0
 shelter_loss_per_day = 4.0
 
-[node name="Citizen4" type="Node2D" parent="World/City/Citizens" unique_id=2139202288 node_paths=PackedStringArray("water_source", "berry_bush", "tree", "city", "time_system")]
+[node name="Citizen4" type="Node2D" parent="World/City/Citizens" unique_id=2139202288 node_paths=PackedStringArray("city", "time_system")]
 position = Vector2(40, -80)
 script = ExtResource("6_p57ef")
-water_source = NodePath("../../../Resources/WaterSource")
-berry_bush = NodePath("../../../Resources/BerryBush")
-tree = NodePath("../../../Resources/Tree")
 city = NodePath("../..")
 time_system = NodePath("../../../../TimeSystem")
 thirst_loss_per_day = 1.0
 hunger_loss_per_day = 2.0
 shelter_loss_per_day = 4.0
 
-[node name="Citizen5" type="Node2D" parent="World/City/Citizens" unique_id=1413914867 node_paths=PackedStringArray("water_source", "berry_bush", "tree", "city", "time_system")]
+[node name="Citizen5" type="Node2D" parent="World/City/Citizens" unique_id=1413914867 node_paths=PackedStringArray("city", "time_system")]
 position = Vector2(40, -80)
 script = ExtResource("6_p57ef")
-water_source = NodePath("../../../Resources/WaterSource")
-berry_bush = NodePath("../../../Resources/BerryBush")
-tree = NodePath("../../../Resources/Tree")
 city = NodePath("../..")
 time_system = NodePath("../../../../TimeSystem")
 thirst_loss_per_day = 1.0
