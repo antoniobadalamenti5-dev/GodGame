@@ -9,6 +9,7 @@ enum Activity {
 	GOING_TO_CONSTRUCTION_SITE,
 	GOING_TO_SOCIAL_PLACE,
 	DELIVERING_TO_CITY,
+	GOING_TO_TEMPLE, # <-- Attività aggiunta in Fase 7
 }
 
 @export var need_action_threshold := 45.0
@@ -24,11 +25,13 @@ const CRITICAL_SOCIALITY_THRESHOLD := 20.0
 @export var shelter_loss_per_day := 8.0
 @export var shelter_recovery_per_day := 12.0
 @export var sociality_loss_per_day := 2.0
+@export var devotion_loss_per_day := 4.0 # Calo devozione giornaliero
 
 var thirst := 50.0
 var hunger := 80.0
 var shelter := 100.0
 @export var sociality := 100.0
+var devotion := 70.0 # 0 (scettico/distante) a 100 (fervore devoto)
 var is_housed := false
 var carried_wood := 0.0
 var carried_food := 0.0
@@ -64,6 +67,7 @@ func advance_day(_day_number: int) -> void:
 	thirst = maxf(thirst - thirst_loss_per_day, 0.0)
 	hunger = maxf(hunger - hunger_loss_per_day, 0.0)
 	sociality = maxf(sociality - sociality_loss_per_day, 0.0)
+	devotion = maxf(devotion - devotion_loss_per_day, 0.0)
 
 	if is_housed:
 		shelter = minf(shelter + shelter_recovery_per_day, 100.0)
@@ -101,14 +105,12 @@ func choose_next_action() -> void:
 	# 2. Fame (priorità vitale)
 	if hunger < need_action_threshold:
 		var needed: float = 100.0 - hunger
-		# Se il magazzino cittadino ha abbastanza cibo, mangia al centro città
 		if city.stored_food >= needed:
 			activity = Activity.GOING_TO_FOOD
 			target = city
 			print("Il cittadino va a mangiare al magazzino cittadino.")
 			return
 		else:
-			# Altrimenti va ai cespugli a raccogliere provviste per sé e per la comunità
 			var berry_bush: BerryBush = city.get_nearest_food(global_position)
 			if berry_bush != null:
 				activity = Activity.GOING_TO_FOOD
@@ -123,7 +125,14 @@ func choose_next_action() -> void:
 		print("Il cittadino ha urgente bisogno di compagnia.")
 		return
 
-	# 4. Scelta ponderata tra cantiere e socialità
+	# 4. Devozione / Richiamo spirituale verso il Tempio
+	if devotion < need_action_threshold and city.temple != null:
+		activity = Activity.GOING_TO_TEMPLE
+		target = city.temple
+		print("Il cittadino si reca in raccoglimento verso il Tempio.")
+		return
+
+	# 5. Scelta ponderata tra cantiere e socialità
 	var social_score := -1.0
 	if sociality < need_action_threshold and meeting_place != null:
 		social_score = 100.0 - sociality
@@ -139,7 +148,6 @@ func choose_next_action() -> void:
 		target = meeting_place
 		print("Il cittadino sceglie di socializzare.")
 	else:
-		# Se non ha bisogni e la scorta della città è sotto la soglia di nascita, contribuisce raccogliendo cibo
 		if city.stored_food < city.food_surplus_for_birth:
 			var bush: BerryBush = city.get_nearest_food(global_position)
 			if bush != null and bush.current_amount > 0.0:
@@ -165,7 +173,6 @@ func start_construction_work() -> void:
 		target = site
 		print("Il cittadino porta legno al cantiere.")
 	else:
-		# Se la città ha legna in magazzino, la preleva da lì per velocizzare il lavoro
 		if city.stored_wood >= WOOD_PER_TRIP:
 			activity = Activity.GOING_TO_TREE
 			target = city
@@ -193,7 +200,6 @@ func complete_current_action() -> void:
 	elif activity == Activity.GOING_TO_FOOD:
 		var food_needed: float = 100.0 - hunger
 		if target == city:
-			# Ha mangiato al magazzino cittadino
 			var taken := city.take_food(food_needed)
 			hunger = minf(hunger + taken, 100.0)
 			print("Il cittadino ha mangiato dal magazzino. Fame: ", int(hunger))
@@ -216,6 +222,12 @@ func complete_current_action() -> void:
 	elif activity == Activity.GOING_TO_SOCIAL_PLACE:
 		sociality = 100.0
 		print("Il cittadino ha socializzato.")
+
+	elif activity == Activity.GOING_TO_TEMPLE:
+		if city != null and city.temple != null:
+			city.temple.receive_prayer(city.god_state)
+			devotion = 100.0
+			print("Il cittadino ha offerto la sua preghiera alla divinità.")
 
 	elif activity == Activity.GOING_TO_TREE:
 		if target == city:
@@ -265,10 +277,6 @@ func complete_current_action() -> void:
 	queue_redraw()
 
 
-
-
-
-
 func set_housed(value: bool) -> void:
 	is_housed = value
 	queue_redraw()
@@ -287,6 +295,8 @@ func _draw() -> void:
 		body_color = Color("#cf9c54")
 	elif activity == Activity.GOING_TO_SOCIAL_PLACE:
 		body_color = Color("#9a78bd")
+	elif activity == Activity.GOING_TO_TEMPLE:
+		body_color = Color("#fbc02d") # Giallo dorato devozionale
 	elif activity == Activity.DELIVERING_TO_CITY:
 		body_color = Color("#e57373")
 
@@ -297,20 +307,28 @@ func _draw() -> void:
 	if carried_food > 0.0:
 		draw_circle(Vector2(-18, 0), 7.0, Color("#b24d62"))
 
-
 	var thirst_ratio: float = thirst / 100.0
 	var hunger_ratio: float = hunger / 100.0
 	var shelter_ratio: float = shelter / 100.0
 	var sociality_ratio: float = sociality / 100.0
+	var devotion_ratio: float = devotion / 100.0
 
-	draw_rect(Rect2(-20, -9, 40, 4), Color("#263238"))
-	draw_rect(Rect2(-20, -9, 40 * sociality_ratio, 4), Color("#9a78bd"))
+	# Barra socialità (viola)
+	draw_rect(Rect2(-20, -9, 40, 3), Color("#263238"))
+	draw_rect(Rect2(-20, -9, 40 * sociality_ratio, 3), Color("#9a78bd"))
 
-	draw_rect(Rect2(-20, -30, 40, 4), Color("#263238"))
-	draw_rect(Rect2(-20, -30, 40 * thirst_ratio, 4), Color("#3d8fd1"))
+	# Barra devozione (oro)
+	draw_rect(Rect2(-20, -14, 40, 3), Color("#263238"))
+	draw_rect(Rect2(-20, -14, 40 * devotion_ratio, 3), Color("#fbc02d"))
 
-	draw_rect(Rect2(-20, -23, 40, 4), Color("#263238"))
-	draw_rect(Rect2(-20, -23, 40 * hunger_ratio, 4), Color("#6cab4b"))
+	# Barra sete (blu)
+	draw_rect(Rect2(-20, -32, 40, 3), Color("#263238"))
+	draw_rect(Rect2(-20, -32, 40 * thirst_ratio, 3), Color("#3d8fd1"))
 
-	draw_rect(Rect2(-20, -16, 40, 4), Color("#263238"))
-	draw_rect(Rect2(-20, -16, 40 * shelter_ratio, 4), Color("#c28b52"))
+	# Barra fame (verde)
+	draw_rect(Rect2(-20, -26, 40, 3), Color("#263238"))
+	draw_rect(Rect2(-20, -26, 40 * hunger_ratio, 3), Color("#6cab4b"))
+
+	# Barra riparo (marrone chiaro)
+	draw_rect(Rect2(-20, -20, 40, 3), Color("#263238"))
+	draw_rect(Rect2(-20, -20, 40 * shelter_ratio, 3), Color("#c28b52"))

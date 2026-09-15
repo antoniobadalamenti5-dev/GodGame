@@ -1,7 +1,6 @@
 class_name GameWorld
 extends Node2D
 
-
 @export var map_size := Vector2(4096, 2560)
 @onready var resources: Node2D = $Resources
 
@@ -16,7 +15,6 @@ const CELL_SIZE := 128.0
 func _ready() -> void:
 	generate_world_resources()
 	queue_redraw()
-
 
 
 func _draw() -> void:
@@ -35,6 +33,28 @@ func advance_day(_day_number: int) -> void:
 	for resource in resources.get_children():
 		if resource.has_method("advance_day"):
 			resource.advance_day()
+
+
+# --- MIRACOLI DIVINI (FASE 7) ---
+func apply_rain_miracle() -> void:
+	# Ricarica abbondante su tutte le fonti d'acqua e risveglia i cespugli di bacche
+	for child in resources.get_children():
+		if child is WaterSource:
+			child.current_amount = minf(child.current_amount + 80.0, child.max_amount)
+			child.queue_redraw()
+		elif child is BerryBush:
+			child.current_amount = minf(child.current_amount + 60.0, child.max_amount)
+			child.queue_redraw()
+	print("🌧️ MIRACOLO DELLA PIOGGIA: Laghi e cespugli di bacche sono stati ricaricati dal cielo!")
+
+
+func apply_tree_growth_miracle() -> void:
+	# Stimola la crescita rapida del legname in tutti gli alberi
+	for child in resources.get_children():
+		if child is Tree_class:
+			child.current_wood = minf(child.current_wood + 40.0, child.max_wood)
+			child.queue_redraw()
+	print("🌲 MIRACOLO SILVANO: Gli alberi della foresta sono rifioriti con nuovo legno!")
 
 
 func get_nearest_water(from_position: Vector2) -> WaterSource:
@@ -80,19 +100,18 @@ func get_nearest_tree(from_position: Vector2) -> Tree_class:
 
 
 func generate_world_resources() -> void:
-	# Rimuoviamo eventuali nodi provvisori presenti in Resources
 	for child in resources.get_children():
 		resources.remove_child(child)
 		child.queue_free()
 
 	var city_pos: Vector2 = map_size / 2.0
 
-	# 1. Posizioniamo 3 sorgenti d'acqua naturali in punti diversi della mappa
-	_create_water_source(Vector2(1100, 750), 180.0)    # Lago Nord-Ovest
-	_create_water_source(Vector2(3000, 850), 140.0)    # Oasi Nord-Est
-	_create_water_source(Vector2(2100, 2050), 160.0)   # Bacino Sud
+	# 1. Tre sorgenti d'acqua naturali
+	_create_water_source(Vector2(1100, 750), 180.0)
+	_create_water_source(Vector2(3000, 850), 140.0)
+	_create_water_source(Vector2(2100, 2050), 160.0)
 
-	# 2. Creiamo boschetti (cluster) di alberi
+	# 2. Boschetti di alberi
 	var forest_centers := [
 		Vector2(1000, 1600),
 		Vector2(3200, 1650),
@@ -107,7 +126,7 @@ func generate_world_resources() -> void:
 			if tree_pos.distance_to(city_pos) >= city_safe_radius:
 				_create_tree(tree_pos)
 
-	# 3. Creiamo cespugli di bacche distribuiti sulla mappa
+	# 3. Cespugli di bacche
 	for i in range(berry_count):
 		var bush_pos := Vector2(
 			randf_range(200, map_size.x - 200),
