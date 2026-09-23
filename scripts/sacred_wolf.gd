@@ -23,6 +23,7 @@ var city_ref: City = null
 var patrol_angle := 0.0
 var is_blessed := false
 var blessing_timer := 0.0
+var hunt_timer := 0.0
 
 
 func _ready() -> void:
@@ -42,11 +43,31 @@ func _process(delta: float) -> void:
 	else:
 		_choose_next_behavior()
 
+	if current_state == State.HUNTING:
+		hunt_timer -= delta
+		if hunt_timer <= 0.0:
+			# Il lupo ha finito la caccia, porta cibo alla città
+			if city_ref != null:
+				city_ref.deposit_food(50.0) # Il lupo porta molta carne!
+				wolf_action_performed.emit("Il Lupo Sacro ha portato della carne alla città affamata!")
+				print("🐺 Il Lupo Sacro ha cacciato con successo (+50 cibo)!")
+			current_state = State.WATCHING_TRIBE
+			_choose_next_behavior()
+
 	queue_redraw()
 
 
 func _choose_next_behavior() -> void:
 	if city_ref == null:
+		return
+
+	# Emergenza Cibo: Il lupo caccia per salvare la città
+	if city_ref.stored_food < 20.0 and current_state != State.HUNTING:
+		current_state = State.HUNTING
+		hunt_timer = 5.0 # Impiega 5 secondi per cacciare
+		# Va nel bosco a caso
+		target_position = city_ref.global_position + Vector2(randf_range(-400, 400), randf_range(-400, 400))
+		wolf_action_performed.emit("Il Lupo Sacro sente la fame dei fedeli e parte per la caccia.")
 		return
 
 	match current_state:
@@ -116,13 +137,34 @@ func _draw() -> void:
 	draw_arc(Vector2.ZERO, aura_radius, 0.0, TAU, 32, Color(aura_color.r, aura_color.g, aura_color.b, 0.8), 2.0)
 
 	var body_color := Color("#eceff1") if current_nature == Nature.PROTECTIVE_GUARDIAN else Color("#37474f")
+	
+	# Ombra
+	draw_circle(Vector2(0, 6), 18.0, Color(0, 0, 0, 0.3))
+
+	# Corpo principale
 	draw_circle(Vector2.ZERO, 16.0, body_color)
+	draw_circle(Vector2.ZERO, 16.0, body_color.darkened(0.4), false, 2.0)
 
 	# Orecchie
-	draw_colored_polygon(PackedVector2Array([Vector2(-12, -12), Vector2(-6, -24), Vector2(0, -12)]), body_color)
-	draw_colored_polygon(PackedVector2Array([Vector2(0, -12), Vector2(6, -24), Vector2(12, -12)]), body_color)
+	var ear_poly_left = PackedVector2Array([Vector2(-12, -12), Vector2(-6, -26), Vector2(0, -12)])
+	var ear_poly_right = PackedVector2Array([Vector2(0, -12), Vector2(6, -26), Vector2(12, -12)])
+	draw_colored_polygon(ear_poly_left, body_color)
+	draw_colored_polygon(ear_poly_right, body_color)
+	draw_polyline(ear_poly_left, body_color.darkened(0.4), 2.0)
+	draw_polyline(ear_poly_right, body_color.darkened(0.4), 2.0)
+
+	# Muso
+	var snout_poly = PackedVector2Array([Vector2(-8, 8), Vector2(0, 18), Vector2(8, 8)])
+	draw_colored_polygon(snout_poly, body_color.darkened(0.1))
+	draw_polyline(snout_poly, body_color.darkened(0.5), 1.5)
+
+	# Naso
+	draw_circle(Vector2(0, 18), 3.0, Color("#1a1a1a"))
 
 	# Occhi sacri
 	var eye_color := Color("#00e5ff") if current_nature == Nature.PROTECTIVE_GUARDIAN else Color("#ff1744")
-	draw_circle(Vector2(-5, -4), 2.5, eye_color)
-	draw_circle(Vector2(5, -4), 2.5, eye_color)
+	draw_circle(Vector2(-6, -2), 3.0, eye_color)
+	draw_circle(Vector2(6, -2), 3.0, eye_color)
+	# Brillio occhio
+	draw_circle(Vector2(-6, -2), 1.0, Color.WHITE)
+	draw_circle(Vector2(6, -2), 1.0, Color.WHITE)

@@ -32,20 +32,35 @@ func receive_food_offering(food_amount: float, god_state: GodState) -> void:
 
 
 func _draw() -> void:
+	# Ombra
+	draw_rect(Rect2(-40, -32, 90, 70), Color(0, 0, 0, 0.3))
+
 	# Basamento del Tempio
 	draw_rect(Rect2(-45, -35, 90, 70), Color("#b99b67"))
+	draw_rect(Rect2(-45, -35, 90, 70), Color("#8a7146"), false, 2.0)
+	
+	# Colonne
+	for i in range(-35, 45, 20):
+		draw_rect(Rect2(i, -35, 10, 70), Color("#d1b26f"))
+		draw_rect(Rect2(i, -35, 10, 70), Color("#8a7146"), false, 1.0)
+
 	# Frontone triangolare monumentale
-	draw_colored_polygon(
-		PackedVector2Array([
-			Vector2(-55, -35),
-			Vector2(0, -75),
-			Vector2(55, -35),
-		]),
-		Color("#775e44")
-	)
+	var pediment_poly = PackedVector2Array([
+		Vector2(-55, -35),
+		Vector2(0, -75),
+		Vector2(55, -35),
+	])
+	draw_colored_polygon(pediment_poly, Color("#775e44"))
+	draw_polyline(pediment_poly, Color("#4e3b28"), 2.0)
+	
+	# Occhio dorato nel frontone
+	draw_circle(Vector2(0, -50), 6.0, Color("#fbc02d"))
+	draw_circle(Vector2(0, -50), 6.0, Color("#f57f17"), false, 1.5)
+
 	# Portale sacro d'ingresso
-	draw_rect(Rect2(-8, 0, 16, 35), Color("#4b3024"))
+	draw_rect(Rect2(-12, 5, 24, 30), Color("#2b1d14"))
+	draw_rect(Rect2(-12, 5, 24, 30), Color("#1a100a"), false, 2.0)
 	
 	# Aura della Fede dorata pulsante
 	var aura_alpha := 0.25 + minf(float(total_prayers_received) * 0.04, 0.45)
-	draw_circle(Vector2(0, -18), 16.0, Color(1.0, 0.88, 0.35, aura_alpha))
+	draw_circle(Vector2(0, -18), 24.0, Color(1.0, 0.88, 0.35, aura_alpha))

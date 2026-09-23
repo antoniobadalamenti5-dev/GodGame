@@ -44,17 +44,22 @@ func _resolve_dependencies() -> void:
 
 func _build_ui_layout() -> void:
 	# Root Control Fullscreen
-	var control = Control.new()
+	var control = MarginContainer.new()
 	control.set_anchors_preset(Control.PRESET_FULL_RECT)
 	control.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	control.add_theme_constant_override("margin_left", 16)
+	control.add_theme_constant_override("margin_right", 16)
+	control.add_theme_constant_override("margin_top", 16)
+	control.add_theme_constant_override("margin_bottom", 16)
 	add_child(control)
+
+	var main_vbox = VBoxContainer.new()
+	main_vbox.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	control.add_child(main_vbox)
 
 	# --- 1. TOP BAR CONTAINER ---
 	var top_panel = PanelContainer.new()
-	top_panel.set_anchors_preset(Control.PRESET_TOP_WIDE)
-	top_panel.position = Vector2(16, 16)
-	top_panel.size = Vector2(1248, 56)
-	control.add_child(top_panel)
+	main_vbox.add_child(top_panel)
 
 	var top_hbox = HBoxContainer.new()
 	top_hbox.add_theme_constant_override("separation", 16)
@@ -99,12 +104,40 @@ func _build_ui_layout() -> void:
 	diplomacy_label.add_theme_color_override("font_color", Color("#fdba74"))
 	top_hbox.add_child(diplomacy_label)
 
+	# Spazio per spingere la barra inferiore in fondo
+	var main_spacer = Control.new()
+	main_spacer.size_flags_vertical = Control.SIZE_EXPAND_FILL
+	main_vbox.add_child(main_spacer)
+
+	# --- 4. BOTTOM BAR CON PULSANTI MIRACOLO ---
+	var bottom_panel = PanelContainer.new()
+	main_vbox.add_child(bottom_panel)
+
+	var bottom_hbox = HBoxContainer.new()
+	bottom_hbox.alignment = BoxContainer.ALIGNMENT_CENTER
+	bottom_hbox.add_theme_constant_override("separation", 14)
+	bottom_panel.add_child(bottom_hbox)
+
+	# --- OVERLAY PER BANNER E TOAST ---
+	var overlay_vbox = VBoxContainer.new()
+	overlay_vbox.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	overlay_vbox.alignment = BoxContainer.ALIGNMENT_START
+	overlay_vbox.add_theme_constant_override("separation", 16)
+	
+	var center_container = CenterContainer.new()
+	center_container.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	center_container.add_child(overlay_vbox)
+	control.add_child(center_container)
+	
+	# Spazio vuoto sopra i banner
+	var top_overlay_spacer = Control.new()
+	top_overlay_spacer.custom_minimum_size = Vector2(0, 60)
+	overlay_vbox.add_child(top_overlay_spacer)
+
 	# --- 2. BANNER EVENTO ATTIVO ---
 	event_banner = PanelContainer.new()
-	event_banner.position = Vector2(400, 80)
-	event_banner.size = Vector2(480, 36)
 	event_banner.visible = false
-	control.add_child(event_banner)
+	overlay_vbox.add_child(event_banner)
 
 	event_label = Label.new()
 	event_label.text = "🌪️ Nessun Evento"
@@ -113,27 +146,13 @@ func _build_ui_layout() -> void:
 
 	# --- 3. TOAST NOTIFICATION ---
 	toast_panel = PanelContainer.new()
-	toast_panel.position = Vector2(340, 130)
-	toast_panel.size = Vector2(600, 44)
 	toast_panel.visible = false
-	control.add_child(toast_panel)
+	overlay_vbox.add_child(toast_panel)
 
 	toast_label = Label.new()
 	toast_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	toast_label.add_theme_color_override("font_color", Color("#fef08a"))
 	toast_panel.add_child(toast_label)
-
-	# --- 4. BOTTOM BAR CON PULSANTI MIRACOLO ---
-	var bottom_panel = PanelContainer.new()
-	bottom_panel.set_anchors_preset(Control.PRESET_BOTTOM_WIDE)
-	bottom_panel.position = Vector2(16, 640)
-	bottom_panel.size = Vector2(1248, 64)
-	control.add_child(bottom_panel)
-
-	var bottom_hbox = HBoxContainer.new()
-	bottom_hbox.alignment = BoxContainer.ALIGNMENT_CENTER
-	bottom_hbox.add_theme_constant_override("separation", 14)
-	bottom_panel.add_child(bottom_hbox)
 
 	btn_rain = Button.new()
 	btn_rain.text = "[1] 🌧️ Pioggia della Vita (20 Fede)"
