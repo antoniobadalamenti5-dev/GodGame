@@ -32,9 +32,9 @@ func receive_food_offering(food_amount: float, god_state: GodState) -> void:
 
 
 func _draw() -> void:
-	# Base solida del Tempio
+	# Basamento del Tempio
 	draw_rect(Rect2(-45, -35, 90, 70), Color("#b99b67"))
-	# Frontone sacro triangolare
+	# Frontone triangolare monumentale
 	draw_colored_polygon(
 		PackedVector2Array([
 			Vector2(-55, -35),
@@ -43,9 +43,9 @@ func _draw() -> void:
 		]),
 		Color("#775e44")
 	)
-	# Portale d'accesso
+	# Portale sacro d'ingresso
 	draw_rect(Rect2(-8, 0, 16, 35), Color("#4b3024"))
 	
-	# Aura luminosa della Fede al centro dell'edificio
-	var aura_alpha := 0.25 + minf(float(total_prayers_received) * 0.05, 0.45)
+	# Aura della Fede dorata pulsante
+	var aura_alpha := 0.25 + minf(float(total_prayers_received) * 0.04, 0.45)
 	draw_circle(Vector2(0, -18), 16.0, Color(1.0, 0.88, 0.35, aura_alpha))

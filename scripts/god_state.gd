@@ -6,11 +6,10 @@ signal miracle_invoked(miracle_name: String, cost: float)
 
 @export_range(0.0, 100.0, 1.0) var expansion_directive := 0.0
 @export var max_faith := 100.0
-var current_faith := 25.0 # Fede iniziale della divinità
+var current_faith := 35.0
 
 
 func _ready() -> void:
-	# Notifica iniziale per sincronizzare la UI
 	call_deferred("emit_faith_state")
 
 
@@ -29,5 +28,5 @@ func spend_faith(amount: float) -> bool:
 		current_faith -= amount
 		faith_changed.emit(current_faith, max_faith)
 		return true
-	print("❌ Fede insufficiente per compiere il miracolo! Richiesti: ", int(amount), ", Disponibili: ", int(current_faith))
+	print("❌ Fede insufficiente! Richiesti: ", int(amount), ", Disponibili: ", int(current_faith))
 	return false
